@@ -1,0 +1,11 @@
+https://developer.chrome.com/extensions/overview#contentScripts
+https://github.com/openpgpjs/openpgpjs
+http://www.html5rocks.com/en/tutorials/security/content-security-policy/
+
+Content script watches alt clicks, modifies styles, adds labels, and fills forms with encrypted values.
+It communicates labels to the event page which sets the popup and the popup icon
+It marks labels as complete and moves the page as forms are filled out in the popup
+
+popup page calls functions on background page with input data as arguments.
+background page sends message to content script with encrypted data.
+

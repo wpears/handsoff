@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "Hands Off",
+  "description":"PGP encrypt your data before it touches the web.",
+  "version":"0.0.1",
+  "icons":{"16":"images/lock16.png",
+           "48":"images/lock48.png",
+           "128":"images/lock128.png"
+           },
+  "browser_action":{
+    "default_icon":{
+      "19":"images/lock19.png",
+      "38":"images/lock38.png"
+    },
+    "default_popup":"explanation.html"
+  },
+  "background":{
+    "scripts":["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js":["content.js"],
+      "run_at":"document_start"
+    }
+  ]
+}
