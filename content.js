@@ -1,4 +1,8 @@
-function getSecure(e){
+(function(){
+  var count = 1;
+  var d = document;
+
+function markAndSend(e){
   var node = e.target;
   var tag= node.tagName;
   if((tag === 'INPUT'||tag === "TEXTAREA") && e.altKey===true){
@@ -7,58 +11,44 @@ function getSecure(e){
   }
 }
 
+function markSelected(node){
+  var offsets = getOffsets(node);
+  if(isMalformed(offsets)) return new Error("Unable to process element");
+  node.placeholder = "Field "+ count;
+  createMarker(offsets);
+}
 
-
-function sendParameters(node){
-  var params = getParameters(node);
-  buildSecure(params);
-  //chrome.runtime.sendMessage(params,insertEncoded.bind(node))
+function createMarker(offsets){
+  console.log(offsets)
+  var markerOuter = d.createElement('div');
+  var marker = d.createElement('span');
+  marker.innerText = count;
+  markerOuter.style.cssText="background-color:#1C86EE;box-shadow:0 1px 3px -1px #166BBE, 0px 1px 3px -1px #A1C3E5 inset;font:800 11px sans-serif;color:#fff;position:absolute;display:table;border-radius:12px;height:20px;width:20px;top:"+offsets.top+"px;left:"+(offsets.left-32) +"px;"
+  marker.style.cssText="text-align:center;display:table-cell;vertical-align:middle;"
+  markerOuter.appendChild(marker);
+  d.body.appendChild(markerOuter)
 }
 
 
-function insertEncoded(response){
-  if(typeof response === "object") console.error(response);
-  this.value = response;
+function updatePopup(){
+  chrome.runtime.sendMessage({})
 }
 
 
-function buildSecure(params){
- if(isMalformed(params)) return new Error("Unable to process input element.");
- var ifr = document.createElement('iframe');
- var area = document.createElement('textarea');
- var style = area.style;
- var ifrstyle = ifr.style;
- ifrstyle.backgroundColor = style.backgroundColor = "#fdefea"
- ifrstyle.height = style.height = 100+params.height + 'px';
- ifrstyle.width = style.width = params.width + 'px';
- ifrstyle.top = params.top + 'px';
- ifrstyle.left = params.left + 'px';
- ifrstyle.position = 'absolute';
- ifrstyle.zIndex = '9999';
- document.body.appendChild(ifr);
- ifr.contentDocument.body.appendChild(area);
- ifr.domain = "FAKEDOMAINWLQWEQWE.com"
- area.focus();
-
-}
 
 
 function isMalformed(params){
-  var height = parseFloat(params.height);
-  var width = parseFloat(params.width);
   var top = parseFloat(params.top);
   var left = parseFloat(params.left);
 
-  if(height !== height || width !== width || top !== top || left !== left){
+  if(top !== top || left !== left){
     return true;
   }
   return false;
 }
 
 
-function getParameters(node){
-  var height = node.clientHeight;
-  var width = node.clientWidth;
+function getOffsets(node){
   var top = 0;
   var left = 0;
   var par;
@@ -69,8 +59,6 @@ function getParameters(node){
   }
   return { top:top
          , left:left
-         , height:height
-         , width:width
          }
 }
 
@@ -79,4 +67,11 @@ function getParameters(node){
 
 
 
-document.addEventListener("mousedown",getSecure);
+d.addEventListener("mousedown",markAndSend);
+
+
+function insertEncoded(response){
+  if(typeof response === "object") console.error(response);
+  this.value = response;
+}
+})();
